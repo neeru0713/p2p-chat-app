@@ -14,7 +14,7 @@ const SignUp = () => {
 
     return (
       <div className="flex">
-        <form className="flex flex-col relative  gap-6 border rounded-xl border-gray-200 m-auto shadow shadow-lg  mt-[5%]">
+        <form className="flex flex-col relative gap-6 border rounded-xl border-gray-200 m-auto shadow shadow-lg  mt-[5%]">
           <div className="flex flex-col">
             <div className="flex flex-row-reverse">
               <PiDotsNineLight className="text-right text-5xl text-[#6e80a4] right-0" />
@@ -54,7 +54,7 @@ const SignUp = () => {
                 type="phone"
                 name="phone"
                 //   value={formData.mobile}
-                placeholder="Phonee Number"
+                placeholder="Phone Number"
                 className="border rounded-md border-gray-300 p-2 text-sm text-gray-500 w-[20rem]"
                 required
               />
