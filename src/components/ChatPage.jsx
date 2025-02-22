@@ -1,9 +1,13 @@
 import React from 'react'
-
+import Chats from './Chats';
+import ChatArea from './ChatArea';
 const ChatPage = () => {
   return (
-    <div>ChatPage</div>
-  )
+    <div className="w-full border border-gray-200 h-screen shadow shadow-lg">
+      <Chats/>
+      <ChatArea/>
+    </div>
+  );
 }
 
 export default ChatPage

@@ -22,7 +22,7 @@ const SignUp = () => {
 
             <div className="flex items-center m-auto gap-1">
               <PiChatSlashBold className="text-3xl" />
-              <h2 className="text-center text-3xl">Chat</h2>
+              <h2 className="text-center text-3xl">chat</h2>
             </div>
           </div>
 
