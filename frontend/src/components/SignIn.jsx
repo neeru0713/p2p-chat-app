@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { PiDotsNineLight } from "react-icons/pi";
 import { PiChatSlashBold } from "react-icons/pi";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { API_URL } from "../config.js";
-const SignUp = () => {
+
+const SignIn = () => {
   const [formData, setFormData] = useState({
-    password: "",
     email: "",
-    mobile: "",
+    password: "",
   });
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -23,7 +23,7 @@ const SignUp = () => {
     setError("");
 
     try {
-      const response = await fetch(`${API_URL}/api/auth/signup`, {
+      const response = await fetch(`${API_URL}/api/auth/signin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -35,7 +35,7 @@ const SignUp = () => {
       setLoading(false);
 
       if (!response.ok) {
-        throw new Error(data.message || "Sign up failed");
+        throw new Error(data.message || "Sign in failed");
       }
 
       localStorage.setItem("token", data.token);
@@ -78,16 +78,6 @@ const SignUp = () => {
           />
 
           <input
-            type="tel"
-            name="mobile"
-            value={formData.mobile}
-            onChange={handleChange}
-            placeholder="Phone Number"
-            className="border rounded-md border-gray-300 p-2 text-sm text-gray-500 w-[20rem]"
-            required
-          />
-
-          <input
             type="password"
             name="password"
             value={formData.password}
@@ -104,11 +94,8 @@ const SignUp = () => {
             className="border rounded-md border-gray-300 p-2 text-sm text-white w-[20rem] bg-[#6e80a4]"
             disabled={loading}
           >
-            {loading ? "Signing Up..." : "Sign Up"}
+            {loading ? "Signing In..." : "Sign In"}
           </button>
-          <p className="text-sm">Existing user ? <Link to="/signin" className="underline text-blue-500 hover:text-blue-700">
-  Sign In
-</Link></p>
         </div>
 
         <PiDotsNineLight className="text-5xl text-[#6e80a4]" />
@@ -117,4 +104,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default SignIn;

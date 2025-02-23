@@ -17,7 +17,7 @@ const ChatInput = ({ selectedChat, userId, setMessages }) => {
 
     socket.emit("sendMessage", msgObj);
 
-    setMessages((prevMessages) => [...prevMessages, {...msgObj, sender: {_id: msgObj.senderId}}]);
+    setMessages((prevMessages) => [{...msgObj, sender: {_id: msgObj.senderId}}, ...prevMessages, ]);
 
     setMessage(""); 
   };

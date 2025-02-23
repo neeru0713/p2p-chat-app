@@ -2,9 +2,16 @@ import React from "react";
 import { PiChatSlashBold } from "react-icons/pi";
 import SearchBar from "../SearchBar";
 import ChatNames from "./ChatNames";
+import { useNavigate } from "react-router-dom";
 
-const Chats = ({ chats, setSelectedChat, fetchChats, setMessages, messages }) => {
-  const loggedInUser = JSON.parse(localStorage.getItem("user"))?.email.split('@')[0];
+const Chats = ({ chats, setSelectedChat, fetchChats, setMessages }) => {
+  const navigate = useNavigate();
+  const loggedInUser = JSON.parse(localStorage.getItem("user"))?.email.split("@")[0];
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/signin");
+  };
 
   return (
     <div className="chats w-[30%] border-r border-gray-200 min-h-[89vh] max-h-[90vh] flex flex-col overflow-y-scroll">
@@ -13,12 +20,19 @@ const Chats = ({ chats, setSelectedChat, fetchChats, setMessages, messages }) =>
           <PiChatSlashBold className="text-xl" />
           <h2 className="text-xl">Chat</h2>
         </div>
-        <SearchBar fetchChats={fetchChats}/>
-        <ChatNames chats={chats} setSelectedChat={setSelectedChat} setMessages={setMessages}/>
+        <SearchBar fetchChats={fetchChats} />
+        <ChatNames chats={chats} setSelectedChat={setSelectedChat} setMessages={setMessages} />
       </div>
-      
-      <div className="m-4 p-4 border-t rounded-lg border-gray-100 bg-blue-50 text-sm font-semibold text-center">
-        Welcome Back {loggedInUser} !
+
+      {/* Welcome & Logout */}
+      <div className="m-3 p-3 border-t rounded-lg border-gray-100 bg-blue-50 text-sm font-semibold text-center flex justify-between items-center">
+        <span>Welcome Back, {loggedInUser}!</span>
+        <button
+          onClick={handleLogout}
+          className="bg-red-500 text-white px-3 py-1 rounded-md text-xs hover:bg-red-600 transition cursor-pointer"
+        >
+          Logout
+        </button>
       </div>
     </div>
   );

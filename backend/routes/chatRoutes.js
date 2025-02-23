@@ -48,7 +48,7 @@ router.get("/search", authMiddleware, async (req, res) => {
     const users = await User.find({
       $or: [
         { email: { $regex: query, $options: "i" } },
-        { phone: { $regex: query, $options: "i" } },
+        { mobile: { $regex: query, $options: "i" } },
       ],
     }).select("-password");
 
@@ -92,7 +92,7 @@ router.get("/:chatId/messages", authMiddleware, async (req, res) => {
     const messages = await Message.find({ chatId })
       .populate("sender", "email") 
       .populate("recipient", "email") 
-      .sort({ timestamp: 1 });
+      .sort({ timestamp: -1 });
 
     res.status(200).json(messages);
   } catch (error) {

@@ -6,7 +6,7 @@ const ChatMessages = ({ selectedChat, messages, setMessages, userId }) => {
     socket.on("receiveMessage", (newMessage) => {
       if (newMessage?.chatId === selectedChat?.id) {
         newMessage = { ...newMessage, sender: { _id: newMessage.senderId } };
-        setMessages((prevMessages) => [...prevMessages, newMessage]);
+        setMessages((prevMessages) => [newMessage, ...prevMessages]);
       }
     });
 
@@ -17,12 +17,19 @@ const ChatMessages = ({ selectedChat, messages, setMessages, userId }) => {
   const formatTime = (timestamp) => {
     if (!timestamp) return "";
     const date = new Date(timestamp);
-    return date.getHours() + ":" + String(date.getMinutes()).padStart(2, "0");
+    let hours = date.getHours();
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    
+    hours = hours % 12 || 12; 
+  
+    return `${hours}:${minutes} ${ampm}`;
   };
+  
 
   const isSender = (msg) => msg.sender._id === userId;
   return (
-    <div className="chat-messages p-4 flex flex-col space-y-2 overflow-y-scroll bg-gray-100 h-full">
+    <div className="chat-messages p-4 flex flex-col-reverse space-y-2 overflow-y-scroll bg-gray-100 h-full px-10">
       {messages?.map((msg, index) => {
         return (
           <div
