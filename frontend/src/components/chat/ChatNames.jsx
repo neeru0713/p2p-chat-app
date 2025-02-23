@@ -1,22 +1,60 @@
-import React from "react";
+import React, { useState } from "react";
 import Avatar from "../Avatar";
-const ChatNames = () => {
-  return (
-    <div className="chat-names flex p-4 justify-between">
-      <div className="flex gap-3 items-center">
-        <Avatar />
+import { API_URL } from "../../config";
 
-        <div className="flex flex-col items-start">
-          <h1 className="font-semibold text-sm">Raggu</h1>
-          <p className="text-gray-400 text-sm">latest message</p>
-        </div>
-      </div>
-      <div className="flex flex-col items-end justify-center">
-        <span className="">8:30 pm</span>
-        <span className="flex justify-center items-center rounded-full bg-blue-400 text-white text-xs px-1 py-[0.5]">
-          <span className="">2</span>
-        </span>
-      </div>
+const ChatNames = ({ chats, setSelectedChat }) => {
+  const [selectedChatId, setSelectedChatId] = useState(null);
+
+  const handleChatClick = async (chat) => {
+    setSelectedChatId(chat.id);
+
+    try {
+      const response = await fetch(`${API_URL}/api/chat/${chat.id}/messages`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+
+      if (response.ok) {
+        const messages = await response.json();
+        setSelectedChat({ ...chat, messages }); 
+      } else {
+        console.error("Failed to fetch messages");
+      }
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+    }
+  };
+
+  return (
+    <div>
+      {chats.length > 0 ? (
+        chats.map((chat) => (
+          <div
+            key={chat.id}
+            className={`chat-names flex px-4 py-2 justify-between cursor-pointer ${
+              selectedChatId === chat.id ? "bg-gray-100" : ""
+            }`}
+            onClick={() => handleChatClick(chat)}
+          >
+            <div className="flex gap-3 items-center">
+              <Avatar />
+              <div className="flex flex-col items-start">
+                <h1 className="font-semibold text-sm">{chat.partnerEmail}</h1>
+                <p className="text-gray-400 text-sm">{chat.latestMessage}</p>
+              </div>
+            </div>
+            <div className="flex flex-col items-end justify-center">
+              <span>{chat.timestamp}</span>
+              {chat.unreadCount > 0 && (
+                <span className="flex justify-center items-center rounded-full bg-blue-400 text-white text-xs px-1 py-[0.5]">
+                  {chat.unreadCount}
+                </span>
+              )}
+            </div>
+          </div>
+        ))
+      ) : (
+        <p>No chats available</p>
+      )}
     </div>
   );
 };
