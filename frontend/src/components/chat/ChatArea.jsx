@@ -1,9 +1,10 @@
-import React from "react";
+import React, {useState} from "react";
 import ChatAreaHeader from "./ChatAreaHeader";
 import ChatMessages from "./ChatMessages";
 import ChatInput from "./ChatInput";
 
-const ChatArea = ({selectedChat, userId}) => {
+const ChatArea = ({selectedChat, userId, setMessages, messages }) => {
+  
   if (!selectedChat) {
     return (
       <div className="flex items-center justify-center h-full m-auto">
@@ -14,8 +15,8 @@ const ChatArea = ({selectedChat, userId}) => {
   return (
     <div className="chat-area flex flex-col w-[70%] justify-between">
       <ChatAreaHeader selectedChat={selectedChat} />
-      <ChatMessages messages={selectedChat.messages} />
-      <ChatInput selectedChat={selectedChat} userId={userId} />
+      <ChatMessages selectedChat={selectedChat} messages={messages} setMessages={setMessages} userId={userId}/>
+      <ChatInput selectedChat={selectedChat} userId={userId} setMessages={setMessages} />
     </div>
   );
 };

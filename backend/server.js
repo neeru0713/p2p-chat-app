@@ -7,6 +7,7 @@ const { router: authRoutes } = require("./routes/authRoutes.js");
 const chatRoutes = require("./routes/chatRoutes.js");
 const User = require("./models/User");
 const jwt = require("jsonwebtoken");
+const Message =  require("./models/Message.js");
 
 require("dotenv").config();
 
@@ -53,17 +54,25 @@ io.use(async (socket, next) => {
 io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.userId}`);
 
-  socket.on("sendMessage", async ({ recipientId, content }) => {
-    console.log("")
+  socket.on("sendMessage", async ({ chatId, senderId, recipientId, content }) => {
+
+
+    const newMessage = new Message({
+      chatId: chatId,
+      sender: senderId,
+      recipient: recipientId,
+      content,
+    });
+
+    await newMessage.save();
+
     const recipientSocket = [...io.sockets.sockets.values()].find(
       (s) => s.userId.toString() === recipientId
     );
 
     if (recipientSocket) {
-      recipientSocket.emit("receiveMessage", { senderId: socket.userId, content });
-    } else {
-      console.log("User offline. Store the message in DB (Future Implementation)");
-    }
+      recipientSocket.emit("receiveMessage", { senderId: socket.userId, content , chatId, timestamp: newMessage.timestamp});
+    } 
   });
 
   socket.on("disconnect", async () => {

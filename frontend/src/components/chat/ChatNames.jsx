@@ -1,12 +1,21 @@
-import React, { useState } from "react";
+import React, { useState , useEffect} from "react";
 import Avatar from "../Avatar";
 import { API_URL } from "../../config";
 
-const ChatNames = ({ chats, setSelectedChat }) => {
+const ChatNames = ({ setSelectedChat, chats, setMessages }) => {
   const [selectedChatId, setSelectedChatId] = useState(null);
+
+  useEffect(() => {
+    if (chats.length > 0 && !selectedChatId) {
+      handleChatClick(chats[0]); 
+    }
+  }, [chats]);
+
 
   const handleChatClick = async (chat) => {
     setSelectedChatId(chat.id);
+    setSelectedChat(chat);
+    setMessages([]);
 
     try {
       const response = await fetch(`${API_URL}/api/chat/${chat.id}/messages`, {
@@ -15,7 +24,7 @@ const ChatNames = ({ chats, setSelectedChat }) => {
 
       if (response.ok) {
         const messages = await response.json();
-        setSelectedChat({ ...chat, messages }); 
+        setMessages(messages);
       } else {
         console.error("Failed to fetch messages");
       }
@@ -36,7 +45,7 @@ const ChatNames = ({ chats, setSelectedChat }) => {
             onClick={() => handleChatClick(chat)}
           >
             <div className="flex gap-3 items-center">
-              <Avatar />
+              <Avatar isOnline={chat.isOnline}/>
               <div className="flex flex-col items-start">
                 <h1 className="font-semibold text-sm">{chat.partnerEmail}</h1>
                 <p className="text-gray-400 text-sm">{chat.latestMessage}</p>

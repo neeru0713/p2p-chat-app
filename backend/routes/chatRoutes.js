@@ -3,24 +3,19 @@ const Chat = require("../models/Chat");
 const User = require("../models/User");
 const { authMiddleware } = require("./authRoutes.js");
 const router = express.Router();
+const Message = require("../models/Message");
 
 const getChats = async (req, res) => {
   try {
     const userId = req.user._id;
 
     const chats = await Chat.find({ participants: { $in: userId } })
-      .populate("participants", "id email mobile isOnline") // Populate user details
-      .populate({
-        path: "messages",
-        options: { sort: { timestamp: -1 }, limit: 1 }, // Get latest message
-        select: "content timestamp sender",
-      });
+      .populate("participants", "id email mobile isOnline");
 
     if (!chats.length) {
       return res.status(200).json({ message: "No chats available" });
     }
-
-    // Format chat data
+   
     const formattedChats = chats.map((chat) => {
       const partner = chat.participants.find((p) => {
         return p._id.toString() !== userId.toString();
@@ -32,9 +27,9 @@ const getChats = async (req, res) => {
         partnerEmail: partner.email,
         partnerMobile: partner.mobile,
         isOnline: partner.isOnline,
-        latestMessage: chat.messages.length > 0 ? chat.messages[0].content : "",
-        timestamp: chat.messages.length > 0 ? chat.messages[0].timestamp : null,
-        unreadCount: 0, // You can implement unread message tracking
+        latestMessage: "",
+        timestamp:  null,
+        unreadCount: 0, 
       };
     });
 
@@ -78,7 +73,7 @@ router.post("/", authMiddleware, async (req, res) => {
     });
 
     if (!chat) {
-      chat = new Chat({ participants: [userId1, userId2], messages: [] });
+      chat = new Chat({ participants: [userId1, userId2] });
       await chat.save();
     }
 
@@ -90,15 +85,22 @@ router.post("/", authMiddleware, async (req, res) => {
 
 router.get("/", authMiddleware, getChats);
 
+
 router.get("/:chatId/messages", authMiddleware, async (req, res) => {
-    try {
-      const chat = await Chat.findById(req.params.chatId).populate("messages.sender", "email");
-      if (!chat) return res.status(404).json({ message: "Chat not found" });
-  
-      res.json(chat.messages);
-    } catch (error) {
-      res.status(500).json({ message: "Error fetching messages", error });
-    }
-  });
+  try {
+    const { chatId } = req.params;
+    const messages = await Message.find({ chatId })
+      .populate("sender", "email") 
+      .populate("recipient", "email") 
+      .sort({ timestamp: 1 });
+
+    res.status(200).json(messages);
+  } catch (error) {
+    console.error("Error fetching messages:", error);
+    res.status(500).json({ message: "Error fetching messages", error });
+  }
+});
+
+module.exports = router;
 
 module.exports = router;

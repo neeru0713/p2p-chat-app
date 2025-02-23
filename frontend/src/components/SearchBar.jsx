@@ -3,7 +3,7 @@ import { IoIosSearch } from "react-icons/io";
 import { API_URL } from "../config";
 
 
-const SearchBar = () => {
+const SearchBar = ({fetchChats}) => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -71,12 +71,15 @@ const SearchBar = () => {
       });
       const data = await response.json();
       if (response.ok) {
-        addChat(data.chat);
+        fetchChats();
       } else {
         console.error(data.message);
       }
+      setShowModal(false);
+     
     } catch (error) {
       console.error("Error creating chat:", error);
+      setShowModal(false);
     }
   };
 
@@ -121,8 +124,8 @@ const SearchBar = () => {
                 className="p-2 cursor-pointer hover:bg-gray-100 text-left"
                 onClick={() => handleSelectUser(user._id)}
               >
-                <p className="text-sm font-medium">{user.name}</p>
-                <p className="text-sm text-gray-800">{user.email} | {user.mobile}</p>
+                <p className="text-xs font-medium">{user.name}</p>
+                <p className="text-xs text-gray-800">{user.email} | {user.mobile}</p>
               </div>
             ))}
           </div>
