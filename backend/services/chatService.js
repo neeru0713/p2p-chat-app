@@ -18,8 +18,10 @@ const getChatsService = async (userId) => {
 
       const latestMessage = await Message.findOne({ chatId: chat._id })
         .sort({ timestamp: -1 })
+        .populate("sender", "email")
         .select("content timestamp sender");
 
+      const senderName = latestMessage?.sender?.email?.split("@")[0];
       return {
         id: chat._id,
         partnerId: partner._id,
@@ -27,6 +29,7 @@ const getChatsService = async (userId) => {
         partnerMobile: partner.mobile,
         isOnline: partner.isOnline,
         latestMessage: latestMessage ? latestMessage.content : "",
+        latestMessageSender: senderName ? senderName : "",
         timestamp: latestMessage ? latestMessage.timestamp : "",
       };
     })

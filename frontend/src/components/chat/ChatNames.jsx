@@ -33,6 +33,19 @@ const ChatNames = ({ setSelectedChat, chats, setMessages }) => {
     }
   };
 
+  const formatTimestamp = (isoString) => {
+    if (!isoString) return '';
+    const date = new Date(isoString);
+    
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+    const amPm = hours >= 12 ? "PM" : "AM";
+  
+    hours = hours % 12 || 12; 
+  
+    return `${hours}:${minutes.toString().padStart(2, "0")} ${amPm}`;
+  };
+
   return (
     <div>
       {chats.length > 0 ? (
@@ -48,11 +61,11 @@ const ChatNames = ({ setSelectedChat, chats, setMessages }) => {
               <Avatar isOnline={chat.isOnline}/>
               <div className="flex flex-col items-start">
                 <h1 className="font-semibold text-sm">{chat.partnerEmail}</h1>
-                <p className="text-gray-400 text-sm">{chat.latestMessage}</p>
+                <p className="text-gray-400 text-xs text-left">{chat.latestMessageSender}: {chat.latestMessage}</p>
               </div>
             </div>
             <div className="flex flex-col items-end justify-center">
-              <span>{chat.timestamp}</span>
+              <span className="text-xs text-gray-600">{formatTimestamp(chat.timestamp)}</span>
               {chat.unreadCount > 0 && (
                 <span className="flex justify-center items-center rounded-full bg-blue-400 text-white text-xs px-1 py-[0.5]">
                   {chat.unreadCount}
