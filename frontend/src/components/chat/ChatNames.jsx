@@ -61,7 +61,7 @@ const ChatNames = ({ setSelectedChat, chats, setMessages }) => {
               <Avatar isOnline={chat.isOnline}/>
               <div className="flex flex-col items-start">
                 <h1 className="font-semibold text-sm">{chat.partnerEmail}</h1>
-                <p className="text-gray-400 text-xs text-left">{chat.latestMessageSender}: {chat.latestMessage}</p>
+                {chat.latestMessage ? <p className="text-gray-400 text-xs text-left">{chat.latestMessageSender}: {chat.latestMessage}</p> : null}
               </div>
             </div>
             <div className="flex flex-col items-end justify-center">

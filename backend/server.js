@@ -50,7 +50,7 @@ io.use(async (socket, next) => {
 
 io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.userId}`);
-
+  io.emit("userOnline", { userId: socket.userId, isOnline: true });
   socket.on("sendMessage", async ({ chatId, senderId, recipientId, content }) => {
     try {
       const newMessage = new Message({ chatId, sender: senderId, recipient: recipientId, content });
@@ -73,6 +73,7 @@ io.on("connection", (socket) => {
     try {
       console.log(`User Disconnected: ${socket.userId}`);
       await User.findByIdAndUpdate(socket.userId, { isOnline: false });
+      io.emit("userOnline", { userId: socket.userId, isOnline: false });
     } catch (err) {
       console.error("Error handling disconnect:", err.message);
     }

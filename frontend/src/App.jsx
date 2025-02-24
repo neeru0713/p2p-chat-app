@@ -4,11 +4,7 @@ import './App.css'
 import SignUp from './components/SignUp'
 import SignIn from './components/SignIn'
 import ChatPage from './components/chat/ChatPage';
-
-
 function App() {
- 
-
   return (
     <Router>
       <Routes>
