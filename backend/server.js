@@ -7,8 +7,7 @@ const { router: authRoutes } = require("./routes/authRoutes.js");
 const chatRoutes = require("./routes/chatRoutes.js");
 const User = require("./models/User");
 const jwt = require("jsonwebtoken");
-const Message =  require("./models/Message.js");
-
+const Message = require("./models/Message.js");
 require("dotenv").config();
 
 const app = express();
@@ -24,8 +23,7 @@ mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 }).then(() => console.log("MongoDB Connected"))
-  .catch(err => console.log(err));
-
+  .catch(err => console.error("MongoDB Connection Error:", err));
 
 const io = new Server(server, {
   cors: { origin: "*" },
@@ -34,19 +32,18 @@ const io = new Server(server, {
 io.use(async (socket, next) => {
   try {
     const token = socket.handshake.auth.token;
-
     if (!token) throw new Error("Unauthorized");
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decoded.id);
     if (!user) throw new Error("Unauthorized");
-   
+
     socket.userId = user._id;
     user.isOnline = true;
     await user.save();
-    
     next();
   } catch (err) {
+    console.error("Socket Authentication Error:", err.message);
     next(new Error("Authentication error"));
   }
 });
@@ -55,32 +52,36 @@ io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.userId}`);
 
   socket.on("sendMessage", async ({ chatId, senderId, recipientId, content }) => {
+    try {
+      const newMessage = new Message({ chatId, sender: senderId, recipient: recipientId, content });
+      await newMessage.save();
 
+      const recipientSocket = [...io.sockets.sockets.values()].find(
+        (s) => s.userId.toString() === recipientId
+      );
 
-    const newMessage = new Message({
-      chatId: chatId,
-      sender: senderId,
-      recipient: recipientId,
-      content,
-    });
-
-    await newMessage.save();
-
-    const recipientSocket = [...io.sockets.sockets.values()].find(
-      (s) => s.userId.toString() === recipientId
-    );
-
-    if (recipientSocket) {
-      recipientSocket.emit("receiveMessage", { senderId: socket.userId, content , chatId, timestamp: newMessage.timestamp});
-    } 
+      if (recipientSocket) {
+        recipientSocket.emit("receiveMessage", { senderId: socket.userId, content, chatId, timestamp: newMessage.timestamp });
+      }
+    } catch (err) {
+      console.error("Error sending message:", err.message);
+      socket.emit("error", { message: "Failed to send message" });
+    }
   });
 
   socket.on("disconnect", async () => {
-    console.log(`User Disconnected: ${socket.userId}`);
-    await User.findByIdAndUpdate(socket.userId, { isOnline: false });
+    try {
+      console.log(`User Disconnected: ${socket.userId}`);
+      await User.findByIdAndUpdate(socket.userId, { isOnline: false });
+    } catch (err) {
+      console.error("Error handling disconnect:", err.message);
+    }
+  });
+
+  socket.on("error", (err) => {
+    console.error("Socket Error:", err.message);
   });
 });
-
 
 const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));

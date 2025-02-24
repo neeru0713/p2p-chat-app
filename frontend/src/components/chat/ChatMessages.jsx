@@ -43,7 +43,7 @@ const ChatMessages = ({ selectedChat, messages, setMessages, userId }) => {
                 isSender(msg) ? "bg-[#dee9ff]" : "bg-white"
               }`}
             >
-              <p className="text-sm">{msg.content}</p>
+              <p className="text-sm text-left">{msg.content}</p>
               <span className="text-xs self-end pr-1 pb-1">
                 {formatTime(msg.timestamp)}
               </span>
