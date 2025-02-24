@@ -4,41 +4,7 @@ const User = require("../models/User");
 const { authMiddleware } = require("../middleware/authMiddleware.js");
 const router = express.Router();
 const Message = require("../models/Message");
-
-const getChats = async (req, res) => {
-  try {
-    const userId = req.user._id;
-
-    const chats = await Chat.find({ participants: { $in: userId } })
-      .populate("participants", "id email mobile isOnline");
-
-    if (!chats.length) {
-      return res.status(200).json({ message: "No chats available" });
-    }
-   
-    const formattedChats = chats.map((chat) => {
-      const partner = chat.participants.find((p) => {
-        return p._id.toString() !== userId.toString();
-      });
-
-      return {
-        id: chat._id,
-        partnerId: partner._id,
-        partnerEmail: partner.email,
-        partnerMobile: partner.mobile,
-        isOnline: partner.isOnline,
-        latestMessage: "",
-        timestamp:  null,
-        unreadCount: 0, 
-      };
-    });
-
-    res.status(200).json(formattedChats);
-  } catch (error) {
-    console.error("Error fetching chats:", error);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-};
+const {getChatsController} = require("../controllers/chatController.js")
 
 router.get("/search", authMiddleware, async (req, res) => {
   try {
@@ -83,7 +49,7 @@ router.post("/", authMiddleware, async (req, res) => {
   }
 });
 
-router.get("/", authMiddleware, getChats);
+router.get("/", authMiddleware, getChatsController);
 
 
 router.get("/:chatId/messages", authMiddleware, async (req, res) => {
@@ -103,4 +69,4 @@ router.get("/:chatId/messages", authMiddleware, async (req, res) => {
 
 module.exports = router;
 
-module.exports = router;
+
