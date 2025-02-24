@@ -40,4 +40,19 @@ const searchUsersService = async (query) => {
   return users;
 };
 
-module.exports = { getChatsService, searchUsersService };
+const createChatService = async (userId1, userId2) => {
+    if (!userId1 || !userId2) throw new Error("Both user IDs are required");
+  
+    let chat = await Chat.findOne({
+      participants: { $all: [userId1, userId2] },
+    });
+  
+    if (!chat) {
+      chat = new Chat({ participants: [userId1, userId2] });
+      await chat.save();
+    }
+  
+    return chat;
+  };
+
+module.exports = { getChatsService, searchUsersService,createChatService };
