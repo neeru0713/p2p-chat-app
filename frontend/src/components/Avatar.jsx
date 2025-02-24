@@ -3,7 +3,7 @@ import { FaUser } from "react-icons/fa"; // Import user icon from react-icons
 
 
 
-const Avatar = ({ name = "", isOnline }) => {
+const Avatar = ({ name = "", isOnline , size = 'm'}) => {
   const initials = name
     ? name
         .split(" ")
@@ -13,15 +13,17 @@ const Avatar = ({ name = "", isOnline }) => {
     : "";
 
   return (
-    <div className="relative w-10 h-10">
+    <div className={`relative ${size === 'l' ? 'w-20 h-20' : 'w-10 h-10'} `}>
      
       <div
-        className={`rounded-full flex justify-center items-center w-10 h-10 text-white font-semibold bg-[#dee9ff]`}
+        className={`rounded-full flex justify-center items-center ${size === 'l' ? 'w-20 h-20' : 'w-10 h-10'}  text-white font-semibold bg-[#dee9ff]`}
       >
         {initials ? (
           <span>{initials}</span>
         ) : (
-          <FaUser className="w-5 h-5" />
+          
+            size === 'l' ? (<FaUser className="w-10 h-10" />)  :  (<FaUser className="w-5 h-5" />)
+          
         )}
       </div>
 
