@@ -10,22 +10,27 @@ const getChatsService = async (userId) => {
 
   if (!chats.length) return [];
 
-  return chats.map((chat) => {
-    const partner = chat.participants.find(
-      (p) => p._id.toString() !== userId.toString()
-    );
+  return await Promise.all(
+    chats.map(async (chat) => {
+      const partner = chat.participants.find(
+        (p) => p._id.toString() !== userId.toString()
+      );
 
-    return {
-      id: chat._id,
-      partnerId: partner._id,
-      partnerEmail: partner.email,
-      partnerMobile: partner.mobile,
-      isOnline: partner.isOnline,
-      latestMessage: "",
-      timestamp: null,
-      unreadCount: 0,
-    };
-  });
+      const latestMessage = await Message.findOne({ chatId: chat._id })
+        .sort({ timestamp: -1 })
+        .select("content timestamp sender");
+
+      return {
+        id: chat._id,
+        partnerId: partner._id,
+        partnerEmail: partner.email,
+        partnerMobile: partner.mobile,
+        isOnline: partner.isOnline,
+        latestMessage: latestMessage ? latestMessage.content : "",
+        timestamp: latestMessage ? latestMessage.timestamp : "",
+      };
+    })
+  );
 };
 
 const searchUsersService = async (query) => {
