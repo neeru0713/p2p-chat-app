@@ -3,8 +3,10 @@ import { PiDotsNineLight } from "react-icons/pi";
 import { PiChatSlashBold } from "react-icons/pi";
 import { useNavigate } from "react-router-dom";
 import { API_URL } from "../config.js";
+import { useSocket } from "../SocketProvider.jsx";
 
 const SignIn = () => {
+  const { socket } = useSocket();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -41,6 +43,7 @@ const SignIn = () => {
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
       localStorage.setItem("userId", data.user._id);
+      socket.emit("userOnline", data.user._id);
 
       navigate("/chat");
     } catch (error) {
@@ -87,7 +90,9 @@ const SignIn = () => {
             required
           />
 
-          {error && <p className="text-red-500 p-4 bg-red-50 text-sm">{error}</p>}
+          {error && (
+            <p className="text-red-500 p-4 bg-red-50 text-sm">{error}</p>
+          )}
 
           <button
             type="submit"

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import socket from "../../socket";
+import { useSocket } from "../../SocketProvider";
 
 const ChatMessages = ({ selectedChat, messages, setMessages, userId }) => {
+  const {socket} = useSocket();
   useEffect(() => {
     socket.on("receiveMessage", (newMessage) => {
       if (newMessage?.chatId === selectedChat?.id) {

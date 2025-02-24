@@ -47,7 +47,7 @@ const ChatAreaHeader = ({ selectedChat }) => {
 
 
           <div className="flex flex-col items-center mt-10 gap-6">
-            <Avatar size="l" isOnline={selectedChat.isOnline} />
+            <Avatar size="l" partnerId={selectedChat.partnerId}/>
             <div className="flex flex-col gap-2">
               <h2 className="name mt-2 font-semibold">
                 {selectedChat.partnerEmail?.split("@")[0]}

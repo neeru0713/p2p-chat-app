@@ -58,7 +58,7 @@ const ChatNames = ({ setSelectedChat, chats, setMessages }) => {
             onClick={() => handleChatClick(chat)}
           >
             <div className="flex gap-3 items-center">
-              <Avatar isOnline={chat.isOnline}/>
+              <Avatar partnerId={chat.partnerId}/>
               <div className="flex flex-col items-start">
                 <h1 className="font-semibold text-sm">{chat.partnerEmail}</h1>
                 {chat.latestMessage ? <p className="text-gray-400 text-xs text-left">{chat.latestMessageSender}: {chat.latestMessage}</p> : null}

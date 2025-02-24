@@ -3,7 +3,10 @@ import { PiDotsNineLight } from "react-icons/pi";
 import { PiChatSlashBold } from "react-icons/pi";
 import { Link, useNavigate } from "react-router-dom";
 import { API_URL } from "../config.js";
+import { useSocket } from "../SocketProvider.jsx";
+
 const SignUp = () => {
+  const { socket } = useSocket();
   const [formData, setFormData] = useState({
     password: "",
     email: "",
@@ -41,6 +44,7 @@ const SignUp = () => {
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
       localStorage.setItem("userId", data.user._id);
+      socket.emit("userOnline", data.user._id);
 
       navigate("/chat");
     } catch (error) {
@@ -97,7 +101,9 @@ const SignUp = () => {
             required
           />
 
-          {error && <p className="text-red-500 p-4 bg-red-50 text-sm">{error}</p>}
+          {error && (
+            <p className="text-red-500 p-4 bg-red-50 text-sm">{error}</p>
+          )}
 
           <button
             type="submit"
@@ -106,9 +112,15 @@ const SignUp = () => {
           >
             {loading ? "Signing Up..." : "Sign Up"}
           </button>
-          <p className="text-sm">Existing user ? <Link to="/signin" className="underline text-blue-500 hover:text-blue-700">
-  Sign In
-</Link></p>
+          <p className="text-sm">
+            Existing user ?{" "}
+            <Link
+              to="/signin"
+              className="underline text-blue-500 hover:text-blue-700"
+            >
+              Sign In
+            </Link>
+          </p>
         </div>
 
         <PiDotsNineLight className="text-5xl text-[#6e80a4]" />

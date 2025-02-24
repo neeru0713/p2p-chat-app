@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { IoMdSend } from "react-icons/io";
-import socket from "../../socket.js";
+import { useSocket } from "../../SocketProvider";
 
 const ChatInput = ({ selectedChat, userId, setMessages }) => {
   const [message, setMessage] = useState("");
-
+  const { socket } = useSocket();
   const sendMessage = async () => {
     if (!message.trim()) return;
     const msgObj = {

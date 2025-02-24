@@ -3,12 +3,14 @@ import { PiChatSlashBold } from "react-icons/pi";
 import SearchBar from "../SearchBar";
 import ChatNames from "./ChatNames";
 import { useNavigate } from "react-router-dom";
-
+import { useSocket } from "../../SocketProvider";
 const Chats = ({ chats, setSelectedChat, fetchChats, setMessages }) => {
+  const { socket } = useSocket();
   const navigate = useNavigate();
   const loggedInUser = JSON.parse(localStorage.getItem("user"))?.email.split("@")[0];
 
   const handleLogout = () => {
+    socket.emit("userOffline", (localStorage.getItem("userId")));
     localStorage.clear();
     navigate("/signin");
   };
