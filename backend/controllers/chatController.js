@@ -1,4 +1,4 @@
-const { getChatsService } = require("../services/chatService");
+const { getChatsService, searchUsersService } = require("../services/chatService");
 
 const getChatsController = async (req, res) => {
   try {
@@ -16,4 +16,21 @@ const getChatsController = async (req, res) => {
   }
 };
 
-module.exports = { getChatsController };
+
+const searchUsersController = async (req, res) => {
+    try {
+      const { query } = req.query;
+  
+      const users = await searchUsersService(query);
+  
+      if (users.length === 0) {
+        return res.status(404).json({ message: "No users found" });
+      }
+  
+      res.status(200).json(users);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+
+module.exports = { getChatsController, searchUsersController };

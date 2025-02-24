@@ -4,28 +4,10 @@ const User = require("../models/User");
 const { authMiddleware } = require("../middleware/authMiddleware.js");
 const router = express.Router();
 const Message = require("../models/Message");
-const {getChatsController} = require("../controllers/chatController.js")
+const {getChatsController, searchUsersController} = require("../controllers/chatController.js")
 
-router.get("/search", authMiddleware, async (req, res) => {
-  try {
-    const { query } = req.query;
-    if (!query) return res.status(400).json({ message: "Query is required" });
+router.get("/search",authMiddleware, searchUsersController);
 
-    const users = await User.find({
-      $or: [
-        { email: { $regex: query, $options: "i" } },
-        { mobile: { $regex: query, $options: "i" } },
-      ],
-    }).select("-password");
-
-    if (users.length === 0)
-      return res.status(404).json({ message: "No users found" });
-
-    res.status(200).json(users);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
 
 router.post("/", authMiddleware, async (req, res) => {
   try {
