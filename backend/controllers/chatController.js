@@ -2,6 +2,7 @@ const {
   getChatsService,
   searchUsersService,
   createChatService,
+  getMessagesByChatIdService
 } = require("../services/chatService");
 
 const getChatsController = async (req, res) => {
@@ -48,8 +49,24 @@ const createChatController = async (req, res) => {
   }
 };
 
+
+const getMessagesByChatIdController = async (req, res) => {
+    try {
+      const { chatId } = req.params;
+  
+      const messages = await getMessagesByChatIdService(chatId);
+  
+      res.status(200).json(messages);
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+      res.status(500).json({ message: "Error fetching messages", error });
+    }
+  };
+  
+
 module.exports = {
   getChatsController,
   searchUsersController,
   createChatController,
+  getMessagesByChatIdController
 };

@@ -1,5 +1,6 @@
 const Chat = require("../models/Chat");
 const User = require("../models/User");
+const Message = require("../models/Message");
 
 const getChatsService = async (userId) => {
   const chats = await Chat.find({ participants: { $in: userId } }).populate(
@@ -41,18 +42,34 @@ const searchUsersService = async (query) => {
 };
 
 const createChatService = async (userId1, userId2) => {
-    if (!userId1 || !userId2) throw new Error("Both user IDs are required");
-  
-    let chat = await Chat.findOne({
-      participants: { $all: [userId1, userId2] },
-    });
-  
-    if (!chat) {
-      chat = new Chat({ participants: [userId1, userId2] });
-      await chat.save();
-    }
-  
-    return chat;
-  };
+  if (!userId1 || !userId2) throw new Error("Both user IDs are required");
 
-module.exports = { getChatsService, searchUsersService,createChatService };
+  let chat = await Chat.findOne({
+    participants: { $all: [userId1, userId2] },
+  });
+
+  if (!chat) {
+    chat = new Chat({ participants: [userId1, userId2] });
+    await chat.save();
+  }
+
+  return chat;
+};
+
+const getMessagesByChatIdService = async (chatId) => {
+  if (!chatId) throw new Error("Chat ID is required");
+
+  const messages = await Message.find({ chatId })
+    .populate("sender", "email")
+    .populate("recipient", "email")
+    .sort({ timestamp: -1 });
+
+  return messages;
+};
+
+module.exports = {
+  getChatsService,
+  searchUsersService,
+  createChatService,
+  getMessagesByChatIdService,
+};
