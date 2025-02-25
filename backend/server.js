@@ -61,22 +61,22 @@ io.on("connection", (socket) => {
       );
 
       if (recipientSocket) {
-        recipientSocket.emit("receiveMessage", { senderId: socket.userId, content, chatId, timestamp: newMessage.timestamp });
+        recipientSocket?.emit("receiveMessage", { senderId: socket.userId, content, chatId, timestamp: newMessage.timestamp });
       }
     } catch (err) {
       console.error("Error sending message:", err.message);
-      socket.emit("error", { message: "Failed to send message" });
+      socket?.emit("error", { message: "Failed to send message" });
     }
   });
 
   socket.on("userOnline", (userId)=>{
     onlineUsers.add(userId);
-    io.emit("userOnline", Array.from(onlineUsers));
+    io?.emit("userOnline", Array.from(onlineUsers));
   })
   
   socket.on("userOffline", (userId)=>{
     onlineUsers.delete(userId);
-    io.emit("userOnline", Array.from(onlineUsers));
+    io?.emit("userOnline", Array.from(onlineUsers));
   })
 
   socket.on("disconnect", async () => {
@@ -84,7 +84,7 @@ io.on("connection", (socket) => {
       console.log(`User Disconnected: ${socket.userId}`);
       await User.findByIdAndUpdate(socket.userId, { isOnline: false });
       onlineUsers.delete(socket.userId);
-      io.emit("onlineUsers", Array.from(onlineUsers));
+      io?.emit("onlineUsers", Array.from(onlineUsers));
     } catch (err) {
       console.error("Error handling disconnect:", err.message);
     }

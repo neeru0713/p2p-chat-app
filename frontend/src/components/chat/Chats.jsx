@@ -10,7 +10,7 @@ const Chats = ({ chats, setSelectedChat, fetchChats, setMessages }) => {
   const loggedInUser = JSON.parse(localStorage.getItem("user"))?.email.split("@")[0];
 
   const handleLogout = () => {
-    socket.emit("userOffline", (localStorage.getItem("userId")));
+    socket?.emit("userOffline", (localStorage.getItem("userId")));
     localStorage.clear();
     navigate("/signin");
   };

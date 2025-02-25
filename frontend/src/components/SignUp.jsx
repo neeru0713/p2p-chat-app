@@ -44,7 +44,7 @@ const SignUp = () => {
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
       localStorage.setItem("userId", data.user._id);
-      socket.emit("userOnline", data.user._id);
+      socket?.emit("userOnline", data.user._id);
 
       navigate("/chat");
     } catch (error) {
